@@ -4,43 +4,26 @@ var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
 
-var _http = require('http');
+var _bodyParser = require('body-parser');
 
-var _http2 = _interopRequireDefault(_http);
-
-var _socket = require('socket.io');
-
-var _socket2 = _interopRequireDefault(_socket);
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var app = _express2.default;
-var server = _http2.default.Server(app);
-var io = new _socket2.default(server);
+var app = (0, _express2.default)();
+var port = process.env.PORT || 3001;
 
-//process.env.PORT is the constant for Heroku automatically assigned port
-//if on Heroku, use their port, otherwise use 47236
-var PORT = process.env.PORT || 47236;
+app.use(_bodyParser2.default.json());
+app.use(_bodyParser2.default.urlencoded({
+    extended: false
+}));
 
-server.listen(PORT, function () {
-    console.log('Server is now running on ' + PORT + '...');
+app.get('/test', function (req, res) {
+    console.log('/test');
+    res.send('Hello World!');
 });
 
-setInterval(function () {
-    console.log('Server running on ' + PORT + '...');
-}, 300000);
-
-io.on('connection', function (socket) {
-    console.log("User Connected!");
-    socket.emit('socketID', { id: socket.id });
-    socket.broadcast.emit('newUser', { id: socket.id });
-
-    socket.on('test', function () {
-        console.log('test');
-    });
-
-    socket.on('disconnect', function () {
-        console.log("User Disconnected");
-    });
+app.listen(port, function () {
+    console.log('listening on port: ', port);
 });
 //# sourceMappingURL=index.js.map

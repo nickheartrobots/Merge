@@ -1,33 +1,22 @@
 import express from 'express'
-import http from 'http'
-import SocketIO from 'socket.io'
+import bodyParser from 'body-parser'
 
-const app = express;
-const server = http.Server(app);
-const io = new SocketIO(server);
+const app = express();
+const port = process.env.PORT || 3001;
 
-//process.env.PORT is the constant for Heroku automatically assigned port
-//if on Heroku, use their port, otherwise use 47236
-const PORT = process.env.PORT || 47236;
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: false
+}))
 
-server.listen(PORT, () => {
-    console.log(`Server is now running on ${ PORT }...`);
+app.get('/test', (req, res) => {
+    console.log('/test')
+    res.send('Hello World!')
 })
 
-setInterval(() => {
-    console.log(`Server running on ${ PORT }...`);
-}, 300000)
-
-io.on('connection', (socket) => {
-    console.log("User Connected!");
-    socket.emit('socketID', { id: socket.id });
-    socket.broadcast.emit('newUser', { id:socket.id});
-
-    socket.on('test', () => {
-        console.log('test')
-    });
-
-    socket.on('disconnect', () => {
-        console.log("User Disconnected");
-    });
+app.listen(port, () => {
+    console.log('listening on port: ', port)
 });
+
+
+
